@@ -3,13 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>Document</title>
 </head>
 <body>
-    <h1>Landing page generator</h1>
+    <div id="projectTitle">
+        <h1>A simple webpage generator</h1>
+    </div>
 
-    <button onclick="addParagraph()">Add a paragraph</button>
-    <button onclick="openWin()">Generate landing page</button>
+    <div id="addElement">
+        <span>Choose an element to add:</span>
+        // TODO: Add more options 
+        <select name="tagname" id="tagname"> 
+            <option value="h1">h1</option> 
+            <option value="h2">h2</option> 
+            <option value="h3">h3</option> 
+            <option value="p">p</option>
+        </select>
+        <input type="text" id="content">
+        <button id="addButton" onclick="addChild()">Add</button>
+    </div>
+
+    <div>
+        <span>Background color: </span><input id="backgroundColor" type="color" onchange="updateBackground()">
+    </div>
+
+    <div id="tableContainer"></div>
+
+    <div>
+        <h2>Live Preview</h2>
+    </div>
+    <div id="preview" style="border: 1px solid;">
+
+    </div>
+
+    <div id="generateButton">
+        <button onclick="openWin()">Generate</button>
+    </div>
 
     <script src="index.js"></script>
 </body>

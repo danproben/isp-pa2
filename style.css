@@ -1,0 +1,44 @@
+body {
+    margin: 5%;
+    padding: 0;
+}
+
+table {
+    border: 1px solid;
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+table div {
+    padding: 10px;;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 10px;
+}
+
+
+
+#projectTitle {
+    text-align: center;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+}
+
+h2 {
+    text-align: center;
+}
+
+#addElement {
+    text-align: center;
+}
+
+#generateButton {
+    text-align: center;
+}
