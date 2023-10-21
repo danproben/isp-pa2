@@ -1,6 +1,7 @@
 body {
     margin: 5%;
     padding: 0;
+    background-color: #FAF9F6;
 }
 
 table {
@@ -8,16 +9,21 @@ table {
     width: 100%;
     text-align: center;
     border-collapse: collapse;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10+ and Edge */
+    user-select: none; /* Standard syntax */
 }
 
 table div {
-    padding: 10px;;
+    padding: 10px;
 }
 
-td, th {
+td, tr {
     border: 1px solid #dddddd;
     text-align: left;
     padding: 10px;
+    cursor:all-scroll;
+    border-collapse: collapse;
 }
 
 
@@ -37,8 +43,19 @@ h2 {
 
 #addElement {
     text-align: center;
+    margin: 3%;;
 }
 
 #generateButton {
+    margin: 3%;
     text-align: center;
+}
+
+#preview {
+    background-color: white;
+}
+
+#backgroundColorContainer {
+    text-align: center;
+    margin: 1%;
 }

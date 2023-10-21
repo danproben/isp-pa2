@@ -13,32 +13,39 @@
 
     <div id="addElement">
         <span>Choose an element to add:</span>
-        // TODO: Add more options 
+        <!-- TODO: Add more options  -->
         <select name="tagname" id="tagname"> 
             <option value="h1">h1</option> 
             <option value="h2">h2</option> 
             <option value="h3">h3</option> 
             <option value="p">p</option>
         </select>
-        <input type="text" id="content">
+        <div>
+            <textarea rows="3" cols="60" type="text" id="content" placeholder="Enter content here"></textarea>
+        </div>
+
         <button id="addButton" onclick="addChild()">Add</button>
     </div>
 
-    <div>
-        <span>Background color: </span><input id="backgroundColor" type="color" onchange="updateBackground()">
+    <div id="backgroundColorContainer">
+        <span>Background color: </span><input id="backgroundColor" value="#ffffff" type="color" onchange="updateBackground()">
     </div>
 
-    <div id="tableContainer"></div>
+    <div>
+        <p>NOTE: Drag and drop elements to change their order.</p>
+    </div>
+    <div id="tableContainer">
+        <table><tr><th>Tag</th><th>Content</th><th>Options</th><th>Actions</th></tr></table>
+    </div>
+    <div id="generateButton">
+        <button onclick="openWin()">Generate</button>
+    </div>
 
     <div>
         <h2>Live Preview</h2>
     </div>
     <div id="preview" style="border: 1px solid;">
 
-    </div>
-
-    <div id="generateButton">
-        <button onclick="openWin()">Generate</button>
     </div>
 
     <script src="index.js"></script>
