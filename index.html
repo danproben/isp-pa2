@@ -21,14 +21,17 @@
             <option value="p">p</option>
         </select>
         <div>
-            <textarea rows="3" cols="60" type="text" id="content" placeholder="Enter content here"></textarea>
+            <textarea rows="3" cols="60" type="text" id="content" placeholder="Enter content here and press the enter key"></textarea>
         </div>
 
         <button id="addButton" onclick="addChild()">Add</button>
     </div>
 
     <div id="backgroundColorContainer">
-        <span>Background color: </span><input id="backgroundColor" value="#ffffff" type="color" onchange="updateBackground()">
+        <span>Background color: </span><input id="backgroundColor" name="background" value="#ffffff" type="color" onchange="updateBody(this)">
+    </div>
+    <div id="marginRange">
+        <span>Adjust margin: </span><p id="marginPercent">0%</p><input type="range" id="bodyMargin" name="margin" value="0" min="0" max="25" onchange="updateBody(this)">
     </div>
 
     <div>

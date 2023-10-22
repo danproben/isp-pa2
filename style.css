@@ -1,5 +1,4 @@
 body {
-    margin: 5%;
     padding: 0;
     background-color: #FAF9F6;
 }
@@ -55,7 +54,7 @@ h2 {
     background-color: white;
 }
 
-#backgroundColorContainer {
+#backgroundColorContainer, #marginRange {
     text-align: center;
     margin: 1%;
 }

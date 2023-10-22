@@ -10,6 +10,8 @@ class Element {
 
         this.html = "";
 
+        this.hyperlink = "";
+
         this.children = [];
 
         Element.prototype.pack = function() {
@@ -44,7 +46,7 @@ class Element {
                     attributes += " ";
                 }
             }
-
+            
             // interpolate the entire html element
             var startTag = `<${ this.tagname }${ attributes }${ css }>`
     
@@ -58,6 +60,10 @@ class Element {
 
             var endTag = `</${ this.tagname }>`;
             this.html = startTag + this.content + endTag;
+
+            if (this.hyperlink != "") {
+                this.html = startTag + `<a href="${this.hyperlink}" target="_blank">` + this.content + '</a>' + endTag;
+            }
         }
     }
 }
@@ -90,22 +96,42 @@ function addChild() {
     generatePreview();
 }
 
-function updateBackground() {
-    const color = document.getElementById("backgroundColor").value
-    document.getElementById("preview").style.backgroundColor = color;
-    body.style["background-color"] = `${color}`;
+function updateBody(caller) {
+
+    var attributeToUpdate = caller.name;
+
+    switch(attributeToUpdate){
+        case "background":
+            const color = document.getElementById("backgroundColor").value
+            // must do it like this instead of calling generate preview again, since body is not included in preview generatation
+            document.getElementById("preview").style.backgroundColor = document.getElementById("backgroundColor").value
+            body.style["background-color"] = `${color}`;
+            break;
+        case "margin":
+            const value = document.getElementById("bodyMargin").value + '%';
+            document.getElementById("marginPercent").innerHTML = value;
+            body.style["margin"] = value;
+            break;
+        default:
+            break;
+    }
+    generatePreview();
 }
 
 function updateElement(option, elementid) {
 
+    var value = document.getElementById(option.id).value;
+
     if (option.name == "color"){
-        body.children[elementid].style["color"] = document.getElementById(option.id).value;
+        body.children[elementid].style["color"] = value;
     } else if (option.name == "tagnames") {
-		body.children[elementid].tagname = document.getElementById(option.id).value;
+		body.children[elementid].tagname = value;
 	} else if (option.name == "hyperlink"){
-		const link = document.getElementById(option.id).value;
-		body.children[elementid].content = `<a href="${link}" target="_blank">` + body.children[elementid].content + '</a>';
-	}
+		const link = value;
+		body.children[elementid].hyperlink = link;
+	} else if (option.name == "alignment"){
+        body.children[elementid].style["text-align"] = value;
+    }
 
 
     body.children[elementid].pack()
@@ -130,13 +156,15 @@ function removeElement(clickedId) {
 }
 
 function generatePreview() {
-    var preview = "";
+    var preview = `<div style="background-color: ${body.style["background-color"]}; margin: ${body.style["margin"]};">`;
 
     for (i = 0; i < body.children.length; i++){
         // preview += '<span style="position: absolute;" onmousedown = "grabber(event);">';
         preview += body.children[i].html;
         // preview += "</span>";
     }
+
+    preview += "</div>"
 
     document.getElementById("preview").innerHTML = preview;
 }
@@ -165,11 +193,11 @@ function generateTable() {
 
         table += `<tr id="${item.attributes.id}" draggable="true" ondragstart="start()" ondragover="dragover()" ondragend="generateTable()">`
 
-		const dropdownMenu = ["h1", "h2", "h3", "p"];
+		const tagnameDropDownMenu = ["h1", "h2", "h3", "p"];
 
 		table += `<td><select name="tagnames" id="tagnames${item.attributes.id}" onchange="updateElement(this, ${item.attributes.id})">`
 
-		dropdownMenu.forEach(tagnameItem => {
+		tagnameDropDownMenu.forEach(tagnameItem => {
 			if (tagnameItem == item.tagname){
 				table += `<option value="${tagnameItem}" selected>${tagnameItem}</option>`;
 			} else {
@@ -189,7 +217,13 @@ function generateTable() {
             case "h3":
             case "p":
                 table += `<input id="colorOption${item.attributes.id}" name="color" type="color" value="${item.style["color"]}" onchange="updateElement(this, ${item.attributes.id})">`
-				table += `<input id="hyperlinkOption${item.attributes.id}" style="margin: 2%" name="hyperlink" type="text" placeholder="Add a hyperlink" onchange="updateElement(this, ${item.attributes.id})">`
+				table += `<input id="hyperlinkOption${item.attributes.id}" value="${item.hyperlink}" style="margin: 2%" name="hyperlink" type="text" placeholder="Add a hyperlink" onchange="updateElement(this, ${item.attributes.id})">`
+
+                table += `<select name="alignment" id="alignmentOption${item.attributes.id}" onchange="updateElement(this, ${item.attributes.id})">`
+                table += `<option value="left" ${item.style["text-align"] == "left" ? "selected" : ""}>Align left</option>`;
+                table += `<option value="center" ${item.style["text-align"] == "center" ? "selected" : ""}>Align center</option>`
+                table += `<option value="right" ${item.style["text-align"] == "right" ? "selected" : ""}>Align right</option>`
+                table += `</select>`
                 break;
             default:
                 console.log("Could not add option")
