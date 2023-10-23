@@ -111,8 +111,7 @@ function checkInputType(option) {
 }
 
 // TODO: Pass the parent in and pack into parent. if no parent is supplied, all new children are added to the body
-function addChild(event) {
-
+function addChild(parent, parentID) {
 
     var newElement = new Element(document.getElementById("tagname").value);
 
@@ -296,7 +295,6 @@ function generateTable() {
                 table += `<option value="center" ${item.style["text-align"] == "center" ? "selected" : ""}>Align center</option>`
                 table += `<option value="right" ${item.style["text-align"] == "right" ? "selected" : ""}>Align right</option>`
                 table += `</select>`
-                
                 break;
             default:
                 break;
