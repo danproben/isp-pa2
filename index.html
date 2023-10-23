@@ -4,52 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Document</title>
+    <title>isp-pa2</title>
 </head>
-<body>
-    <div id="projectTitle">
-        <h1>A simple webpage generator</h1>
-    </div>
-
-    <div id="addElement">
-        <span>Choose an element to add:</span>
-        <!-- TODO: Add more options  -->
-        <select name="tagname" id="tagname"> 
-            <option value="h1">h1</option> 
-            <option value="h2">h2</option> 
-            <option value="h3">h3</option> 
-            <option value="p">p</option>
-        </select>
-        <div>
-            <textarea rows="3" cols="60" type="text" id="content" placeholder="Enter content here and press the enter key"></textarea>
-        </div>
-
-        <button id="addButton" onclick="addChild()">Add</button>
-    </div>
-
-    <div id="backgroundColorContainer">
-        <span>Background color: </span><input id="backgroundColor" name="background" value="#ffffff" type="color" onchange="updateBody(this)">
-    </div>
-    <div id="marginRange">
-        <span>Adjust margin: </span><p id="marginPercent">0%</p><input type="range" id="bodyMargin" name="margin" value="0" min="0" max="25" onchange="updateBody(this)">
-    </div>
-
+<body>    
     <div>
-        <p>NOTE: Drag and drop elements to change their order.</p>
+        <h1>A Webpage Generator</h1>
     </div>
-    <div id="tableContainer">
+
+    <!-------------------- Add an element ------------------>
+    <h3 style="margin: 0;">Add an element</h3>
+    <div style="border: 1px solid; margin: 0%; margin-bottom: 2%; padding: 1%;">
+        <form id="elementSelectionForm">
+            <label for="tagname">Choose an element to add: </label>
+            <select name="tagname" id="tagname" onchange="checkInputType(this)"> 
+                <option value="h1">h1</option> 
+                <option value="h2">h2</option> 
+                <option value="h3">h3</option> 
+                <option value="p">p</option>
+                <option value="img">img</option>
+            </select>
+        </form>
+        <form id="addElementForm">
+            <textarea name="text" id="text" cols="60" rows="3" placeholder="Enter content for the element and press the enter key"></textarea>
+            <input style="display: none;" id="img" type="file" accept="image/png, image/gif, image/jpeg" onchange="readImage()">
+        </form>
+        <button id="addButton" onclick="addChild(this)">Add</button>
+    </div>
+
+    <!-------------------- Options applied to body ------------------>
+    <h3 style="margin: 0;">Options applied to body</h3>
+    <div style="border: 1px solid; margin: 0%; margin-bottom: 2%; padding: 1%;">
+        <div id="backgroundColorContainer" style="display: inline">
+            <span>Background color: </span><input id="backgroundColor" name="background" value="#ffffff" type="color" onchange="updateBody(this)">
+        </div>
+        <div id="marginRange" style="display: inline-block">
+            <span>Margin: </span><p id="marginPercent">0%</p><input type="range" id="bodyMargin" name="margin" value="0" min="0" max="25" onchange="updateBody(this)">
+        </div>
+    </div>
+
+    <!-------------------- Table of elements ------------------>
+    <h3 style="margin: 0;">Table of elements</h3>
+    <p style="color: red;">NOTE: Drag and drop elements to change their order.</p>
+    <div id="tableContainer" style="border: 1px solid; margin: 0%; margin-bottom: 2%;">
         <table><tr><th>Tag</th><th>Content</th><th>Options</th><th>Actions</th></tr></table>
     </div>
-    <div id="generateButton">
-        <button onclick="openWin()">Generate</button>
+
+    <!-------------------- Generate button ------------------>
+    <div id="generateButton" style="margin: 0;">
+        <button onclick="openWin()">Generate Webpage</button>
     </div>
 
-    <div>
-        <h2>Live Preview</h2>
-    </div>
-    <div id="preview" style="border: 1px solid;">
-
-    </div>
+    <!-------------------- Live preview ------------------> 
+    <h2>Live Preview</h2>
+    <div id="preview" style="border: 1px solid;"></div>
 
     <script src="index.js"></script>
 </body>

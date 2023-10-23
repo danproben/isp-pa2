@@ -1,22 +1,24 @@
 class Element {
     constructor(tagname) {
         this.tagname = tagname;
-
         this.attributes = {};
-
         this.content = "";
-
-        this.style = {};
-
+        this.style = {
+            "color": "#000000",
+            "text-align": "center",
+            "overflow-wrap": "anywhere"
+        };
         this.html = "";
-
         this.hyperlink = "";
-
         this.children = [];
+
+        // image related stuff
+        this.src;
+        this.imgSize = "200";
 
         Element.prototype.pack = function() {
 
-            var css = ""
+            var css = "";
             var attributes = "";
 
             // check to see if the style dictionary is empty or not to determine if css should be added
@@ -33,12 +35,13 @@ class Element {
                 css += '"';
             }
 
+            // check to see if the attributes dictionary is empty or not to determine if attributes should be added
             if (Object.keys(this.attributes).length) {
                 attributes += " ";
 
             // loop through attributes
                 for (let key in this.attributes){
-                    // if an attribute is present, add it to the css string
+                    // if an attribute is present, add it to the attributes string
                     if (this.attributes[key]) {
                         attributes += `${key}="${this.attributes[key]}"`;
                     }
@@ -46,10 +49,11 @@ class Element {
                     attributes += " ";
                 }
             }
-            
+
             // interpolate the entire html element
             var startTag = `<${ this.tagname }${ attributes }${ css }>`
-    
+            var endTag = `</${ this.tagname }>`;
+
             // if a parent, place immediate children html into content
             if (this.children.length > 0){
                 this.content = "";
@@ -58,14 +62,23 @@ class Element {
                 }
             }
 
-            var endTag = `</${ this.tagname }>`;
             this.html = startTag + this.content + endTag;
 
             if (this.hyperlink != "") {
                 this.html = startTag + `<a href="${this.hyperlink}" target="_blank">` + this.content + '</a>' + endTag;
             }
+            
+            if (this.tagname == "img"){
+                this.html = `<div style="text-align: ${this.style["text-align"]}"><img width="${this.imgSize}" id="${this.attributes.id}" src="${this.attributes.src}"></div>`;
+            }
+        
         }
     }
+}
+
+var inputFile = document.getElementById("img");
+inputFile.onchange = function() {
+    generateTable();
 }
 
 var body = new Element("body");
@@ -77,23 +90,55 @@ function openWin() {
     myWindow.document.write(page);
 }
 
+function checkInputType(option) {
+    
+    switch(option.value){
+        case "h1":
+        case "h2": 
+        case "h3":
+        case "p":
+            document.getElementById("text").style.display = "inline";
+            document.getElementById("img").style.display = "none"
+            break;
+        case "img":
+            document.getElementById("text").style.display = "none";
+            document.getElementById("img").style.display = "block"
+            break;
+        default:
+            break;
+        
+    }
+}
+
 // TODO: Pass the parent in and pack into parent. if no parent is supplied, all new children are added to the body
-function addChild() {
-    // these properties need to be added more dynamically if possible.
+function addChild(event) {
+
+
     var newElement = new Element(document.getElementById("tagname").value);
-    newElement.attributes["id"] = body.children.length;
-    newElement.style["color"] = "#000000";
-    newElement.style["text-align"] = "center";
-	newElement.style["overflow-wrap"] = "anywhere";
-    newElement.content = document.getElementById("content").value;
+
+    switch(newElement.tagname){
+        case "h1":
+        case "h2": 
+        case "h3":
+        case "p":
+            newElement.attributes["id"] = body.children.length;
+            newElement.content = document.getElementById("text").value;
+            break;
+        case "img":
+            newElement.attributes["id"] = body.children.length;
+            newElement.attributes["src"] = URL.createObjectURL(inputFile.files[0]);
+            break;
+        default:
+            break;
+    }
+
     newElement.pack();
 
     body.children.push(newElement);
     body.pack();
 
-	// document.getElementById("content").value = '';
-    generateTable();
     generatePreview();
+    generateTable();
 }
 
 function updateBody(caller) {
@@ -131,10 +176,12 @@ function updateElement(option, elementid) {
 		body.children[elementid].hyperlink = link;
 	} else if (option.name == "alignment"){
         body.children[elementid].style["text-align"] = value;
+    } else if (option.name == "imgSize") {
+        body.children[elementid].imgSize = value;
     }
 
-
     body.children[elementid].pack()
+    body.pack();
     generatePreview();
 	generateTable();
 }
@@ -159,9 +206,7 @@ function generatePreview() {
     var preview = `<div style="background-color: ${body.style["background-color"]}; margin: ${body.style["margin"]};">`;
 
     for (i = 0; i < body.children.length; i++){
-        // preview += '<span style="position: absolute;" onmousedown = "grabber(event);">';
         preview += body.children[i].html;
-        // preview += "</span>";
     }
 
     preview += "</div>"
@@ -186,52 +231,80 @@ function generateWebpage() {
 function generateTable() {
 
     let table = '<table>';
-
     table += '<tr><th>Tag</th><th>Content</th><th>Options</th><th>Actions</th></tr>';
+
+    let images = [];
 
     body.children.forEach(item => {
 
+        // ---------------- Tag
+        var tagname = item.tagname;
         table += `<tr id="${item.attributes.id}" draggable="true" ondragstart="start()" ondragover="dragover()" ondragend="generateTable()">`
 
-		const tagnameDropDownMenu = ["h1", "h2", "h3", "p"];
 
-		table += `<td><select name="tagnames" id="tagnames${item.attributes.id}" onchange="updateElement(this, ${item.attributes.id})">`
 
-		tagnameDropDownMenu.forEach(tagnameItem => {
-			if (tagnameItem == item.tagname){
-				table += `<option value="${tagnameItem}" selected>${tagnameItem}</option>`;
-			} else {
-				table += `<option value="${tagnameItem}">${tagnameItem}</option>`;
-			}
-		})
+        if (tagname != "img"){
 
-		table += '</select></td>'
+            table += `<td><select name="tagnames" id="tagnames${item.attributes.id}" onchange="updateElement(this, ${item.attributes.id})">`
 
-        table += `<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;">${item.content}</td>`       // content
+            const tagnameDropDownMenu = ["h1", "h2", "h3", "p"];
+            tagnameDropDownMenu.forEach(tagnameItem => {
+                if (tagnameItem == item.tagname){
+                    table += `<option value="${tagnameItem}" selected>${tagnameItem}</option>`;
+                } else {
+                    table += `<option value="${tagnameItem}">${tagnameItem}</option>`;
+                }
+            })
+            table += '</select></td>'
+        } else {
+            table += "<td><p>img</p></td>"
+        }
 
+
+        // ---------------- Content
+
+        table += `<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;">`
+        table += item.tagname != "img" ? item.content : `<img width="100px" id="img${item.attributes.id}" src="${item.attributes.src}">` // if the tagname is an image, set the content of the "content" to an img tag
+        table += `</td>`       // content
+
+        // ----------------- Options
 		table += "<td>";
-
         switch(item.tagname){
             case "h1":
             case "h2":
             case "h3":
             case "p":
+                // text color
                 table += `<input id="colorOption${item.attributes.id}" name="color" type="color" value="${item.style["color"]}" onchange="updateElement(this, ${item.attributes.id})">`
-				table += `<input id="hyperlinkOption${item.attributes.id}" value="${item.hyperlink}" style="margin: 2%" name="hyperlink" type="text" placeholder="Add a hyperlink" onchange="updateElement(this, ${item.attributes.id})">`
+				// add a hyperlink
+                table += `<input id="hyperlinkOption${item.attributes.id}" value="${item.hyperlink}" style="margin: 2%" name="hyperlink" type="text" placeholder="Add a hyperlink" onchange="updateElement(this, ${item.attributes.id})">`
 
+                // alignment options
                 table += `<select name="alignment" id="alignmentOption${item.attributes.id}" onchange="updateElement(this, ${item.attributes.id})">`
                 table += `<option value="left" ${item.style["text-align"] == "left" ? "selected" : ""}>Align left</option>`;
                 table += `<option value="center" ${item.style["text-align"] == "center" ? "selected" : ""}>Align center</option>`
                 table += `<option value="right" ${item.style["text-align"] == "right" ? "selected" : ""}>Align right</option>`
                 table += `</select>`
                 break;
+            case "img":
+                // image size in px
+                table += `<p>Image size: </p><input type="text" id="imgSize" name="imgSize" value="${item.imgSize}" onchange="updateElement(this, ${item.attributes.id})">`
+
+                // alignment options
+                table += `<select name="alignment" id="alignmentOption${item.attributes.id}" onchange="updateElement(this, ${item.attributes.id})">`
+                table += `<option value="left" ${item.style["text-align"] == "left" ? "selected" : ""}>Align left</option>`;
+                table += `<option value="center" ${item.style["text-align"] == "center" ? "selected" : ""}>Align center</option>`
+                table += `<option value="right" ${item.style["text-align"] == "right" ? "selected" : ""}>Align right</option>`
+                table += `</select>`
+                
+                break;
             default:
-                console.log("Could not add option")
                 break;
         }
 
 		table += "</td>";
 
+        // -------------------- Actions
         table += `<td><button onclick="removeElement(${item.attributes.id})">Remove</button>` // remove element
     })
 
@@ -242,7 +315,7 @@ function generateTable() {
 
 const addButton = document.getElementById("addButton");
 
-const contentField = document.getElementById("content");
+const contentField = document.getElementById("text");
 
 contentField.addEventListener("keypress", ({key}) => {
     if (key == "Enter"){
@@ -254,7 +327,7 @@ contentField.addEventListener("keypress", ({key}) => {
 
 // ---------------- drag and drop order
 
-// fix deprecated event by adding event listeners
+// TODO: fix deprecated event by adding event listeners
 var row;
 
 function start(){
